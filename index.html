@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sir Shotto App</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root{
+            --bg:#050816;
+            --card:rgba(255,255,255,.09);
+            --card2:rgba(255,255,255,.14);
+            --line:rgba(255,255,255,.13);
+            --text:#ffffff;
+            --muted:#a7b0c0;
+            --green:#00e676;
+            --cyan:#00c8ff;
+            --pink:#ff4ecd;
+            --yellow:#ffcc33;
+        }
+
+        *{
+            box-sizing:border-box;
+            -webkit-tap-highlight-color:transparent;
+        }
+
+        body{
+            margin:0;
+            min-height:100vh;
+            color:var(--text);
+            font-family:Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(0,230,118,.18), transparent 36%),
+                radial-gradient(circle at top right, rgba(255,78,205,.18), transparent 36%),
+                radial-gradient(circle at bottom, rgba(0,200,255,.17), transparent 42%),
+                linear-gradient(145deg,#020617,#050816);
+            overflow-x:hidden;
+            padding-bottom:92px;
+        }
+
+        .app{
+            max-width:540px;
+            margin:auto;
+            min-height:100vh;
+        }
+
+        .top-fixed{
+            position:sticky;
+            top:0;
+            z-index:1000;
+            background:rgba(5,8,22,.96);
+            backdrop-filter:blur(18px);
+            border-bottom:1px solid var(--line);
+            padding:10px 12px;
+        }
+
+        .brand-row{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            margin-bottom:10px;
+        }
+
+        .brand{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            min-width:0;
+        }
+
+        .logo{
+            width:43px;
+            height:43px;
+            border-radius:16px;
+            display:grid;
+            place-items:center;
+            background:linear-gradient(135deg,var(--green),var(--cyan));
+            box-shadow:0 12px 30px rgba(0,230,118,.2);
+            flex:0 0 auto;
+        }
+
+        .brand strong{
+            display:block;
+            font-size:15px;
+            font-weight:950;
+            line-height:1.1;
+        }
+
+        .brand small{
+            display:block;
+            color:var(--muted);
+            font-size:11px;
+        }
+
+        .nav-icons{
+            display:flex;
+            align-items:center;
+            gap:7px;
+            flex:0 0 auto;
+        }
+
+        .icon-btn{
+            width:40px;
+            height:40px;
+            border-radius:50%;
+            border:1px solid var(--line);
+            background:rgba(255,255,255,.09);
+            color:white;
+            display:grid;
+            place-items:center;
+            text-decoration:none;
+        }
+
+        .icon-btn:active{
+            transform:scale(.96);
+        }
+
+        .search-box{
+            display:grid;
+            grid-template-columns:1fr 44px;
+            gap:8px;
+        }
+
+        .form-control,
+        .form-select,
+        textarea{
+            background:rgba(255,255,255,.09)!important;
+            border:1px solid var(--line)!important;
+            color:white!important;
+            border-radius:16px!important;
+        }
+
+        .form-control::placeholder,
+        textarea::placeholder{
+            color:#94a3b8;
+        }
+
+        .form-select option{
+            background:#ffffff!important;
+            color:#111827!important;
+            font-weight:700;
+        }
+
+        .form-select:focus,
+        .form-control:focus,
+        textarea:focus{
+            box-shadow:0 0 0 .2rem rgba(0,230,118,.18)!important;
+            border-color:rgba(0,230,118,.55)!important;
+        }
+
+        .content{
+            padding:12px;
+        }
+
+        .main-card{
+            border-radius:30px;
+            background:
+                radial-gradient(circle at top left, rgba(0,230,118,.15), transparent 42%),
+                radial-gradient(circle at bottom right, rgba(255,78,205,.18), transparent 43%),
+                var(--card);
+            border:1px solid var(--line);
+            padding:14px;
+            box-shadow:0 22px 55px rgba(0,0,0,.35);
+        }
+
+        .stage{
+            height:292px;
+            border-radius:27px;
+            background:
+                linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.04)),
+                radial-gradient(circle at center,rgba(0,230,118,.15),transparent 60%);
+            border:1px solid rgba(255,255,255,.12);
+            overflow:hidden;
+            position:relative;
+            display:grid;
+            place-items:center;
+            margin-bottom:12px;
+        }
+
+        .youtube-frame,
+        .video-player{
+            display:none;
+            width:100%;
+            height:100%;
+            border:0;
+            background:#000;
+        }
+
+        .disc-area{
+            width:min(230px,73vw);
+            aspect-ratio:1/1;
+            position:relative;
+            display:grid;
+            place-items:center;
+        }
+
+        .disc{
+            width:100%;
+            height:100%;
+            border-radius:50%;
+            background:
+                radial-gradient(circle at center,#fff 0 7%,#111827 8% 15%,#020617 16% 25%,#263248 26% 28%,#020617 29% 100%);
+            box-shadow:inset 0 0 18px rgba(255,255,255,.12),0 24px 50px rgba(0,0,0,.48);
+            animation:spin 7s linear infinite;
+            animation-play-state:paused;
+        }
+
+        .disc.playing{
+            animation-play-state:running;
+        }
+
+        .disc::before{
+            content:"";
+            position:absolute;
+            inset:18%;
+            border-radius:50%;
+            border:2px dashed rgba(255,255,255,.16);
+        }
+
+        .disc::after{
+            content:"";
+            position:absolute;
+            inset:36%;
+            border-radius:50%;
+            background:linear-gradient(135deg,var(--green),var(--cyan),var(--pink));
+            box-shadow:0 0 25px rgba(0,230,118,.25);
+        }
+
+        .tone-arm{
+            position:absolute;
+            right:-32px;
+            top:30px;
+            width:118px;
+            height:12px;
+            border-radius:999px;
+            background:linear-gradient(90deg,#e5e7eb,#94a3b8);
+            transform-origin:right center;
+            transform:rotate(-24deg);
+            transition:.35s;
+            z-index:3;
+        }
+
+        .tone-arm::after{
+            content:"";
+            position:absolute;
+            left:-12px;
+            top:-9px;
+            width:28px;
+            height:30px;
+            border-radius:8px;
+            background:#111827;
+            border:1px solid rgba(255,255,255,.25);
+        }
+
+        .tone-arm.playing{
+            transform:rotate(-8deg);
+        }
+
+        .waves{
+            position:absolute;
+            left:20px;
+            right:20px;
+            bottom:17px;
+            display:flex;
+            align-items:end;
+            justify-content:center;
+            gap:5px;
+            height:40px;
+            opacity:.45;
+        }
+
+        .bar{
+            width:6px;
+            height:10px;
+            border-radius:999px;
+            background:linear-gradient(var(--green),var(--cyan));
+            animation:wave 1s ease-in-out infinite;
+            animation-play-state:paused;
+        }
+
+        .bar:nth-child(2){animation-delay:.1s}
+        .bar:nth-child(3){animation-delay:.2s}
+        .bar:nth-child(4){animation-delay:.3s}
+        .bar:nth-child(5){animation-delay:.4s}
+        .bar:nth-child(6){animation-delay:.5s}
+        .bar:nth-child(7){animation-delay:.2s}
+        .bar:nth-child(8){animation-delay:.1s}
+
+        .waves.playing .bar{
+            animation-play-state:running;
+        }
+
+        @keyframes spin{
+            to{transform:rotate(360deg)}
+        }
+
+        @keyframes wave{
+            0%,100%{height:8px}
+            50%{height:34px}
+        }
+
+        .title{
+            font-size:1.18rem;
+            font-weight:950;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            margin-bottom:2px;
+        }
+
+        .artist{
+            color:var(--muted);
+            font-size:13px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            margin-bottom:8px;
+        }
+
+        .time-row{
+            display:flex;
+            justify-content:space-between;
+            font-size:11px;
+            color:var(--muted);
+            margin-bottom:3px;
+        }
+
+        input[type=range]{
+            width:100%;
+            accent-color:var(--green);
+        }
+
+        .controls{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:13px;
+            margin-top:10px;
+        }
+
+        .control-sm{
+            width:43px;
+            height:43px;
+            border-radius:50%;
+            border:1px solid var(--line);
+            background:rgba(255,255,255,.09);
+            color:white;
+            display:grid;
+            place-items:center;
+        }
+
+        .control-main{
+            width:64px;
+            height:64px;
+            border-radius:50%;
+            border:0;
+            background:linear-gradient(135deg,var(--green),var(--cyan));
+            color:white;
+            display:grid;
+            place-items:center;
+            font-size:24px;
+            box-shadow:0 16px 35px rgba(0,230,118,.24);
+        }
+
+        .quick-actions{
+            display:grid;
+            grid-template-columns:repeat(5,1fr);
+            gap:8px;
+            margin-top:12px;
+        }
+
+        .quick-actions button,
+        .quick-actions a{
+            border-radius:16px;
+            border:1px solid var(--line);
+            background:rgba(255,255,255,.08);
+            color:white;
+            padding:9px 4px;
+            font-size:10.5px;
+            font-weight:850;
+            text-align:center;
+            text-decoration:none;
+        }
+
+        .quick-actions i{
+            display:block;
+            font-size:16px;
+            margin-bottom:4px;
+        }
+
+        .list-card{
+            margin-top:12px;
+            border-radius:24px;
+            background:var(--card);
+            border:1px solid var(--line);
+            padding:12px;
+        }
+
+        .tabs{
+            display:flex;
+            gap:7px;
+            overflow-x:auto;
+            padding-bottom:4px;
+        }
+
+        .tabs button{
+            border:1px solid var(--line);
+            background:rgba(255,255,255,.08);
+            color:white;
+            border-radius:999px;
+            padding:7px 12px;
+            font-size:12px;
+            white-space:nowrap;
+        }
+
+        .tabs button.active{
+            background:linear-gradient(135deg,var(--green),var(--cyan));
+            border-color:transparent;
+            font-weight:900;
+        }
+
+        .results{
+            margin-top:10px;
+            max-height:335px;
+            overflow-y:auto;
+        }
+
+        .item{
+            display:grid;
+            grid-template-columns:52px 1fr auto;
+            gap:9px;
+            align-items:center;
+            padding:9px;
+            border-radius:18px;
+            background:rgba(255,255,255,.065);
+            border:1px solid rgba(255,255,255,.09);
+            margin-bottom:8px;
+            cursor:pointer;
+        }
+
+        .item.active{
+            border-color:rgba(0,230,118,.45);
+            background:rgba(0,230,118,.14);
+        }
+
+        .thumb{
+            width:52px;
+            height:52px;
+            border-radius:17px;
+            overflow:hidden;
+            display:grid;
+            place-items:center;
+            background:linear-gradient(135deg,var(--green),var(--pink));
+        }
+
+        .thumb img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        .meta{
+            min-width:0;
+        }
+
+        .meta strong{
+            display:block;
+            font-size:13.5px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+
+        .meta small{
+            display:block;
+            color:var(--muted);
+            font-size:11px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+
+        .mini-round{
+            width:34px;
+            height:34px;
+            border-radius:50%;
+            border:1px solid var(--line);
+            background:rgba(255,255,255,.08);
+            color:white;
+            display:grid;
+            place-items:center;
+        }
+
+        .empty{
+            text-align:center;
+            border:1px dashed rgba(255,255,255,.20);
+            border-radius:18px;
+            color:var(--muted);
+            padding:16px;
+            font-size:13px;
+        }
+
+        .bottom-player{
+            position:fixed;
+            left:0;
+            right:0;
+            bottom:0;
+            z-index:999;
+            background:rgba(5,8,22,.96);
+            backdrop-filter:blur(18px);
+            border-top:1px solid var(--line);
+            padding:9px 10px;
+        }
+
+        .bottom-inner{
+            max-width:540px;
+            margin:auto;
+            display:grid;
+            grid-template-columns:44px 1fr auto;
+            gap:9px;
+            align-items:center;
+        }
+
+        .bottom-thumb{
+            width:44px;
+            height:44px;
+            border-radius:15px;
+            overflow:hidden;
+            display:grid;
+            place-items:center;
+            background:linear-gradient(135deg,var(--green),var(--cyan));
+        }
+
+        .bottom-thumb img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        .bottom-text{
+            min-width:0;
+        }
+
+        .bottom-text strong{
+            display:block;
+            font-size:13px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+
+        .bottom-text small{
+            display:block;
+            color:var(--muted);
+            font-size:11px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+
+        .lyrics-sheet{
+            position:fixed;
+            left:50%;
+            bottom:82px;
+            transform:translateX(-50%) translateY(120%);
+            width:min(540px,100%);
+            height:45vh;
+            max-height:78vh;
+            min-height:165px;
+            z-index:998;
+            background:rgba(8,17,31,.98);
+            border:1px solid var(--line);
+            border-radius:26px 26px 0 0;
+            box-shadow:0 -22px 55px rgba(0,0,0,.45);
+            transition:.28s;
+            display:flex;
+            flex-direction:column;
+            overflow:hidden;
+        }
+
+        .lyrics-sheet.open{
+            transform:translateX(-50%) translateY(0);
+        }
+
+        .drag-handle{
+            padding:10px 0 7px;
+            display:grid;
+            place-items:center;
+            cursor:ns-resize;
+        }
+
+        .drag-handle span{
+            width:54px;
+            height:5px;
+            border-radius:999px;
+            background:rgba(255,255,255,.28);
+        }
+
+        .lyrics-head{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:0 14px 8px;
+            border-bottom:1px solid rgba(255,255,255,.10);
+        }
+
+        .lyrics-body{
+            padding:13px 15px 22px;
+            overflow-y:auto;
+            white-space:pre-wrap;
+            line-height:1.75;
+            color:#dbeafe;
+            font-size:14px;
+            flex:1;
+        }
+
+        .modal-content{
+            border-radius:24px;
+            background:#08111f;
+            color:white;
+            border:1px solid var(--line);
+        }
+
+        .btn-main{
+            border:0;
+            border-radius:999px;
+            background:linear-gradient(135deg,var(--green),var(--cyan));
+            color:white;
+            font-weight:900;
+        }
+
+        .btn-soft{
+            border-radius:999px;
+            border:1px solid var(--line);
+            background:rgba(255,255,255,.08);
+            color:white;
+            font-weight:850;
+        }
+
+        .sound-row{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            padding:12px 0;
+            border-bottom:1px solid rgba(255,255,255,.10);
+        }
+
+        .sound-row:last-child{
+            border-bottom:0;
+        }
+
+        .sound-row label{
+            font-size:13px;
+            color:#e5e7eb;
+            font-weight:800;
+            margin:0;
+        }
+
+        .sound-row small{
+            color:var(--muted);
+            font-size:11px;
+        }
+
+        .sound-row .control-side{
+            width:55%;
+        }
+
+        @media(max-width:390px){
+            .stage{
+                height:260px;
+            }
+
+            .disc-area{
+                width:min(207px,72vw);
+            }
+
+            .control-main{
+                width:58px;
+                height:58px;
+            }
+
+            .control-sm{
+                width:40px;
+                height:40px;
+            }
+
+            .item{
+                grid-template-columns:46px 1fr auto;
+            }
+
+            .thumb{
+                width:46px;
+                height:46px;
+            }
+
+            .quick-actions{
+                gap:6px;
+            }
+
+            .quick-actions button{
+                font-size:9.8px;
+                padding:8px 3px;
+            }
+
+            .brand strong{
+                font-size:13px;
+            }
+
+            .brand small{
+                font-size:10px;
+            }
+
+            .icon-btn{
+                width:37px;
+                height:37px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="top-fixed">
+        <div class="brand-row">
+            <div class="brand">
+                <div class="logo">
+                    <i class="fa-solid fa-compact-disc"></i>
+                </div>
+                <div>
+                    <strong>Sir Shotto App</strong>
+                    <small>By Fidelis Paschal Shotto</small>
+                </div>
+            </div>
+
+            <div class="nav-icons">
+                <button class="icon-btn" data-bs-toggle="modal" data-bs-target="#addModal" title="Add">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+                <button class="icon-btn" data-bs-toggle="modal" data-bs-target="#soundModal" title="Sound">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+
+                <button class="icon-btn" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search music, artist, video...">
+            <button class="icon-btn" onclick="searchMusic()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </div>
+
+    <main class="content">
+
+        <section class="main-card">
+
+            <div class="stage">
+                <iframe id="youtubeFrame" class="youtube-frame"
+                        allow="autoplay; encrypted-media; picture-in-picture"
+                        allowfullscreen></iframe>
+
+                <video id="videoPlayer" class="video-player" controls playsinline></video>
+
+                <div class="disc-area" id="discArea">
+                    <div class="disc" id="disc"></div>
+                    <div class="tone-arm" id="toneArm"></div>
+                </div>
+
+                <div class="waves" id="waves">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+            </div>
+
+            <div class="title" id="nowTitle">Chagua music</div>
+            <div class="artist" id="nowArtist">Fixed YouTube + Device Music + Search</div>
+
+            <div class="time-row">
+                <span id="currentTime">0:00</span>
+                <span id="durationTime">0:00</span>
+            </div>
+
+            <input type="range" id="progressRange" min="0" max="100" value="0">
+
+            <div class="controls">
+                <button class="control-sm" onclick="prevSong()">
+                    <i class="fa-solid fa-backward-step"></i>
+                </button>
+
+                <button class="control-main" id="playBtn" onclick="togglePlay()">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+
+                <button class="control-sm" onclick="nextSong()">
+                    <i class="fa-solid fa-forward-step"></i>
+                </button>
+            </div>
+
+            <div class="quick-actions">
+                <button onclick="openLyrics()">
+                    <i class="fa-solid fa-align-left"></i>Lyrics
+                </button>
+
+                <button onclick="importDeviceFiles()">
+                    <i class="fa-solid fa-folder-open"></i>Device
+                </button>
+
+                <button onclick="addCurrentToPlaylist()">
+                    <i class="fa-solid fa-bookmark"></i>Save
+                </button>
+
+                <button onclick="openYoutubeSearch()">
+                    <i class="fa-brands fa-youtube"></i>YouTube
+                </button>
+
+                <button data-bs-toggle="modal" data-bs-target="#soundModal">
+                    <i class="fa-solid fa-sliders"></i>Sound
+                </button>
+            </div>
+
+        </section>
+
+        <section class="list-card">
+            <div class="tabs">
+                <button id="tabFixed" class="active" onclick="setTab('fixed')">Fixed YouTube</button>
+                <button id="tabLibrary" onclick="setTab('library')">Library</button>
+                <button id="tabSearch" onclick="setTab('search')">Search</button>
+                <button id="tabPlaylist" onclick="setTab('playlist')">Playlist</button>
+            </div>
+
+            <div class="results" id="resultsBox"></div>
+        </section>
+
+    </main>
+</div>
+
+<div class="bottom-player" onclick="openLyrics()">
+    <div class="bottom-inner">
+        <div class="bottom-thumb" id="bottomThumb">
+            <i class="fa-solid fa-music"></i>
+        </div>
+
+        <div class="bottom-text">
+            <strong id="bottomTitle">No music selected</strong>
+            <small id="bottomArtist">Tap kufungua lyrics/details</small>
+        </div>
+
+        <button class="mini-round" onclick="event.stopPropagation(); togglePlay();">
+            <i id="bottomPlayIcon" class="fa-solid fa-play"></i>
+        </button>
+    </div>
+</div>
+
+<div class="lyrics-sheet" id="lyricsSheet">
+    <div class="drag-handle" id="dragHandle">
+        <span></span>
+    </div>
+
+    <div class="lyrics-head">
+        <strong><i class="fa-solid fa-align-left text-warning me-1"></i>Lyrics / Details</strong>
+        <button class="mini-round" onclick="closeLyrics()">
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
+    </div>
+
+    <div class="lyrics-body" id="lyricsBody">
+        Lyrics/details zitaonekana hapa.
+    </div>
+</div>
+
+<input type="file" id="deviceFiles" class="d-none" accept="audio/*,video/*" multiple>
+<audio id="audioPlayer"></audio>
+
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">
+                    <i class="fa-solid fa-plus me-2"></i>Add Music / Video / YouTube
+                </h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="form-label">Title</label>
+                    <input type="text" id="addTitle" class="form-control" placeholder="Music title">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">Artist</label>
+                    <input type="text" id="addArtist" class="form-control" placeholder="Artist">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">Type</label>
+                    <select id="addType" class="form-select" onchange="toggleType()">
+                        <option value="audio">Audio File/URL</option>
+                        <option value="video">Video File/URL</option>
+                        <option value="youtube">YouTube Link</option>
+                    </select>
+                </div>
+
+                <div id="fileBox">
+                    <div class="mb-2">
+                        <label class="form-label">Choose File</label>
+                        <input type="file" id="addFile" class="form-control" accept="audio/*,video/*">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Direct URL</label>
+                        <input type="url" id="addUrl" class="form-control" placeholder="https://example.com/music.mp3">
+                    </div>
+                </div>
+
+                <div id="youtubeBox" class="d-none">
+                    <div class="mb-2">
+                        <label class="form-label">YouTube Link</label>
+                        <input type="text" id="addYoutube" class="form-control" placeholder="https://youtu.be/...">
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">Cover Image</label>
+                    <input type="file" id="addImage" class="form-control" accept="image/*">
+                </div>
+
+                <div>
+                    <label class="form-label">Lyrics / Details</label>
+                    <textarea id="addLyrics" class="form-control" rows="4" placeholder="Andika lyrics/details hapa..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer border-secondary">
+                <button class="btn btn-soft" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-main px-4" onclick="saveManual()">
+                    <i class="fa-solid fa-save me-1"></i>Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="soundModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">
+                    <i class="fa-solid fa-sliders me-2"></i>Sound Control
+                </h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="sound-row">
+                    <div>
+                        <label>Play Speed</label>
+                        <br>
+                        <small id="speedText">1.00x</small>
+                    </div>
+                    <div class="control-side">
+                        <input type="range" id="speedRange" min="0.5" max="2" step="0.05" value="1">
+                    </div>
+                </div>
+
+                <div class="sound-row">
+                    <div>
+                        <label>Amplifier</label>
+                        <br>
+                        <small id="volumeText">100%</small>
+                    </div>
+                    <div class="control-side">
+                        <input type="range" id="volumeRange" min="0" max="1" step="0.01" value="1">
+                    </div>
+                </div>
+
+                <div class="sound-row">
+                    <div>
+                        <label>Sound Preset</label>
+                        <br>
+                        <small id="presetText">Normal</small>
+                    </div>
+                    <div class="control-side">
+                        <select id="presetSelect" class="form-select form-select-sm" onchange="applyPreset()">
+                            <option value="normal">Normal</option>
+                            <option value="rock">Rock</option>
+                            <option value="heavy">Heavy Metal</option>
+                            <option value="pop">Pop</option>
+                            <option value="jazz">Jazz</option>
+                            <option value="classic">Classic</option>
+                            <option value="bass">Bass Boost</option>
+                            <option value="vocal">Vocal</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-secondary">
+                <button class="btn btn-main px-4" data-bs-dismiss="modal">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="settingsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">
+                    <i class="fa-solid fa-gear me-2"></i>Settings
+                </h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <strong>Auto Next</strong>
+                        <div style="font-size:12px;color:#a7b0c0;">Music ikiisha, inayofuata ianze.</div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoNext" checked>
+                    </div>
+                </div>
+
+                <hr class="border-secondary">
+
+                <button class="btn btn-outline-danger rounded-pill w-100 fw-bold" onclick="clearLibrary()">
+                    <i class="fa-solid fa-trash me-2"></i>Clear Library
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const fixedYoutube = [
+        {
+            id:'yt_rJwEphsNVH8',
+            title:'Fixed YouTube 1',
+            artist:'YouTube',
+            type:'youtube',
+            youtubeId:'rJwEphsNVH8',
+            image:'https://img.youtube.com/vi/rJwEphsNVH8/hqdefault.jpg',
+            lyrics:'Fixed YouTube video 1.'
+        },
+        {
+            id:'yt_CQLsdm1ZYAw',
+            title:'Fixed YouTube 2',
+            artist:'YouTube',
+            type:'youtube',
+            youtubeId:'CQLsdm1ZYAw',
+            image:'https://img.youtube.com/vi/CQLsdm1ZYAw/hqdefault.jpg',
+            lyrics:'Fixed YouTube video 2.'
+        },
+        {
+            id:'yt_dNt1QR1ecuM',
+            title:'Fixed YouTube 3',
+            artist:'YouTube',
+            type:'youtube',
+            youtubeId:'dNt1QR1ecuM',
+            image:'https://img.youtube.com/vi/dNt1QR1ecuM/hqdefault.jpg',
+            lyrics:'Fixed YouTube video 3.'
+        },
+        {
+            id:'yt_nrTkERuwdCc',
+            title:'Fixed YouTube 4',
+            artist:'YouTube',
+            type:'youtube',
+            youtubeId:'nrTkERuwdCc',
+            image:'https://img.youtube.com/vi/nrTkERuwdCc/hqdefault.jpg',
+            lyrics:'Fixed YouTube video 4.'
+        },
+        {
+            id:'yt_bLF90M96m2Q',
+            title:'Fixed YouTube 5',
+            artist:'YouTube',
+            type:'youtube',
+            youtubeId:'bLF90M96m2Q',
+            image:'https://img.youtube.com/vi/bLF90M96m2Q/hqdefault.jpg',
+            lyrics:'Fixed YouTube video 5.'
+        }
+    ];
+
+    let library = JSON.parse(localStorage.getItem('shottoLibrary')) || [];
+    let playlist = JSON.parse(localStorage.getItem('shottoPlaylist')) || [];
+    let searchResults = [];
+    let currentTab = 'fixed';
+    let currentSong = null;
+
+    const audio = document.getElementById('audioPlayer');
+    const video = document.getElementById('videoPlayer');
+    const youtubeFrame = document.getElementById('youtubeFrame');
+    const discArea = document.getElementById('discArea');
+    const disc = document.getElementById('disc');
+    const toneArm = document.getElementById('toneArm');
+    const waves = document.getElementById('waves');
+    const playBtn = document.getElementById('playBtn');
+    const bottomPlayIcon = document.getElementById('bottomPlayIcon');
+    const progressRange = document.getElementById('progressRange');
+
+    function saveLocal(){
+        localStorage.setItem('shottoLibrary', JSON.stringify(library.filter(x => x.source !== 'device-temp')));
+        localStorage.setItem('shottoPlaylist', JSON.stringify(playlist));
+    }
+
+    function escapeHtml(t){
+        return String(t || '')
+            .replaceAll('&','&amp;')
+            .replaceAll('<','&lt;')
+            .replaceAll('>','&gt;')
+            .replaceAll('"','&quot;')
+            .replaceAll("'","&#039;");
+    }
+
+    function setTab(tab){
+        currentTab = tab;
+
+        document.getElementById('tabFixed').classList.toggle('active', tab === 'fixed');
+        document.getElementById('tabLibrary').classList.toggle('active', tab === 'library');
+        document.getElementById('tabSearch').classList.toggle('active', tab === 'search');
+        document.getElementById('tabPlaylist').classList.toggle('active', tab === 'playlist');
+
+        renderList();
+    }
+
+    function getList(){
+        if(currentTab === 'fixed') return fixedYoutube;
+        if(currentTab === 'library') return library;
+        if(currentTab === 'search') return searchResults;
+        if(currentTab === 'playlist') return playlist.map(id => findSong(id)).filter(Boolean);
+        return [];
+    }
+
+    function findSong(id){
+        return [...fixedYoutube, ...library, ...searchResults].find(x => String(x.id) === String(id));
+    }
+
+    function renderList(){
+        const box = document.getElementById('resultsBox');
+        const data = getList();
+
+        if(!data.length){
+            box.innerHTML = `<div class="empty">Hakuna item hapa kwa sasa.</div>`;
+            return;
+        }
+
+        box.innerHTML = data.map(song => `
+            <div class="item ${currentSong && currentSong.id === song.id ? 'active' : ''}" onclick="selectSong('${song.id}', true)">
+                <div class="thumb">
+                    ${song.image ? `<img src="${song.image}" alt="">` : `<i class="fa-solid ${song.type === 'youtube' ? 'fa-youtube' : song.type === 'video' ? 'fa-video' : 'fa-music'}"></i>`}
+                </div>
+
+                <div class="meta">
+                    <strong>${escapeHtml(song.title)}</strong>
+                    <small>${escapeHtml(song.artist || 'Unknown')}</small>
+                    <small>${song.type.toUpperCase()}</small>
+                </div>
+
+                <button class="mini-round" onclick="event.stopPropagation(); addToPlaylist('${song.id}')">
+                    <i class="fa-solid fa-bookmark"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    async function searchMusic(){
+        const q = document.getElementById('searchInput').value.trim();
+
+        if(!q){
+            alert('Andika jina la music/video.');
+            return;
+        }
+
+        document.getElementById('resultsBox').innerHTML = `<div class="empty">Searching...</div>`;
+
+        try{
+            const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=20`;
+            const res = await fetch(url);
+            const data = await res.json();
+
+            searchResults = (data.results || []).map(item => ({
+                id:'search_' + item.trackId,
+                title:item.trackName,
+                artist:item.artistName,
+                type:'audio',
+                url:item.previewUrl,
+                image:item.artworkUrl100 ? item.artworkUrl100.replace('100x100','600x600') : '',
+                lyrics:'Hii ni preview kutoka online search. Kwa full song/video tumia YouTube.',
+                source:'search'
+            }));
+
+            setTab('search');
+        }catch(e){
+            document.getElementById('resultsBox').innerHTML = `<div class="empty">Search imeshindikana. Angalia internet.</div>`;
+        }
+    }
+
+    function openYoutubeSearch(){
+        const q = document.getElementById('searchInput').value.trim() || 'music';
+        window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent(q), '_blank');
+    }
+
+    function selectSong(id, autoplay){
+        const song = findSong(id);
+        if(!song) return;
+
+        currentSong = song;
+        stopAll();
+
+        document.getElementById('nowTitle').textContent = song.title;
+        document.getElementById('nowArtist').textContent = song.artist || 'Unknown';
+        document.getElementById('bottomTitle').textContent = song.title;
+        document.getElementById('bottomArtist').textContent = song.artist || 'Unknown';
+        document.getElementById('lyricsBody').textContent = song.lyrics || 'Hakuna lyrics/details.';
+
+        const bottomThumb = document.getElementById('bottomThumb');
+        bottomThumb.innerHTML = song.image
+            ? `<img src="${song.image}" alt="">`
+            : `<i class="fa-solid ${song.type === 'youtube' ? 'fa-youtube' : song.type === 'video' ? 'fa-video' : 'fa-music'}"></i>`;
+
+        if(song.type === 'youtube'){
+            showYoutube(song.youtubeId, autoplay);
+        }else if(song.type === 'video'){
+            showVideo(song.url, autoplay);
+        }else{
+            showAudio(song.url, autoplay);
+        }
+
+        renderList();
+    }
+
+    function showYoutube(videoId, autoplay){
+        discArea.style.display = 'none';
+        video.style.display = 'none';
+        youtubeFrame.style.display = 'block';
+
+        const auto = autoplay ? '?autoplay=1&rel=0' : '?rel=0';
+        youtubeFrame.src = `https://www.youtube.com/embed/${videoId}${auto}`;
+
+        setPlaying(true);
+    }
+
+    function showVideo(url, autoplay){
+        youtubeFrame.src = '';
+        youtubeFrame.style.display = 'none';
+        discArea.style.display = 'none';
+        video.style.display = 'block';
+
+        video.src = url;
+        video.playbackRate = Number(document.getElementById('speedRange').value);
+        video.volume = Number(document.getElementById('volumeRange').value);
+
+        if(autoplay) video.play().catch(()=>{});
+    }
+
+    function showAudio(url, autoplay){
+        youtubeFrame.src = '';
+        youtubeFrame.style.display = 'none';
+        video.style.display = 'none';
+        discArea.style.display = 'grid';
+
+        audio.src = url;
+        audio.playbackRate = Number(document.getElementById('speedRange').value);
+        audio.volume = Number(document.getElementById('volumeRange').value);
+
+        if(autoplay) audio.play().catch(()=>{});
+    }
+
+    function stopAll(){
+        audio.pause();
+        video.pause();
+        audio.removeAttribute('src');
+        video.removeAttribute('src');
+        youtubeFrame.src = '';
+
+        progressRange.value = 0;
+        document.getElementById('currentTime').textContent = '0:00';
+        document.getElementById('durationTime').textContent = '0:00';
+
+        setPlaying(false);
+    }
+
+    function togglePlay(){
+        if(!currentSong){
+            alert('Chagua music kwanza.');
+            return;
+        }
+
+        if(currentSong.type === 'youtube'){
+            openLyrics();
+            return;
+        }
+
+        const player = currentSong.type === 'video' ? video : audio;
+
+        if(player.paused){
+            player.play().catch(()=>{});
+        }else{
+            player.pause();
+        }
+
+        updateUI();
+    }
+
+    function setPlaying(isPlaying){
+        playBtn.innerHTML = isPlaying ? `<i class="fa-solid fa-pause"></i>` : `<i class="fa-solid fa-play"></i>`;
+        bottomPlayIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+        disc.classList.toggle('playing', isPlaying);
+        toneArm.classList.toggle('playing', isPlaying);
+        waves.classList.toggle('playing', isPlaying);
+    }
+
+    function updateUI(){
+        let isPlaying = false;
+
+        if(currentSong){
+            if(currentSong.type === 'audio') isPlaying = !audio.paused && audio.src;
+            if(currentSong.type === 'video') isPlaying = !video.paused && video.src;
+            if(currentSong.type === 'youtube') isPlaying = true;
+        }
+
+        setPlaying(!!isPlaying);
+    }
+
+    function nextSong(){
+        const data = getList();
+        if(!data.length) return;
+
+        let i = data.findIndex(x => currentSong && x.id === currentSong.id);
+        i++;
+        if(i >= data.length) i = 0;
+
+        selectSong(data[i].id, true);
+    }
+
+    function prevSong(){
+        const data = getList();
+        if(!data.length) return;
+
+        let i = data.findIndex(x => currentSong && x.id === currentSong.id);
+        i--;
+        if(i < 0) i = data.length - 1;
+
+        selectSong(data[i].id, true);
+    }
+
+    function formatTime(sec){
+        if(!sec || isNaN(sec)) return '0:00';
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60).toString().padStart(2,'0');
+        return `${m}:${s}`;
+    }
+
+    function updateProgress(player){
+        if(!player.duration) return;
+
+        progressRange.value = (player.currentTime / player.duration) * 100;
+        document.getElementById('currentTime').textContent = formatTime(player.currentTime);
+        document.getElementById('durationTime').textContent = formatTime(player.duration);
+    }
+
+    progressRange.addEventListener('input', () => {
+        if(!currentSong || currentSong.type === 'youtube') return;
+
+        const player = currentSong.type === 'video' ? video : audio;
+
+        if(player.duration){
+            player.currentTime = (progressRange.value / 100) * player.duration;
+        }
+    });
+
+    audio.addEventListener('timeupdate', () => updateProgress(audio));
+    video.addEventListener('timeupdate', () => updateProgress(video));
+
+    audio.addEventListener('play', updateUI);
+    audio.addEventListener('pause', updateUI);
+    video.addEventListener('play', updateUI);
+    video.addEventListener('pause', updateUI);
+
+    audio.addEventListener('ended', () => {
+        updateUI();
+        if(document.getElementById('autoNext').checked) nextSong();
+    });
+
+    video.addEventListener('ended', () => {
+        updateUI();
+        if(document.getElementById('autoNext').checked) nextSong();
+    });
+
+    document.getElementById('speedRange').addEventListener('input', function(){
+        const v = Number(this.value);
+        audio.playbackRate = v;
+        video.playbackRate = v;
+        document.getElementById('speedText').textContent = v.toFixed(2) + 'x';
+    });
+
+    document.getElementById('volumeRange').addEventListener('input', function(){
+        const v = Number(this.value);
+        audio.volume = v;
+        video.volume = v;
+        document.getElementById('volumeText').textContent = Math.round(v * 100) + '%';
+    });
+
+    function applyPreset(){
+        const preset = document.getElementById('presetSelect').value;
+        const presetText = document.getElementById('presetSelect').options[document.getElementById('presetSelect').selectedIndex].text;
+        document.getElementById('presetText').textContent = presetText;
+
+        let speed = 1;
+        let volume = 1;
+
+        if(preset === 'rock'){
+            speed = 1.03;
+            volume = 1;
+        }else if(preset === 'heavy'){
+            speed = 1.05;
+            volume = 1;
+        }else if(preset === 'pop'){
+            speed = 1;
+            volume = .95;
+        }else if(preset === 'jazz'){
+            speed = .95;
+            volume = .9;
+        }else if(preset === 'classic'){
+            speed = .92;
+            volume = .85;
+        }else if(preset === 'bass'){
+            speed = 1;
+            volume = 1;
+        }else if(preset === 'vocal'){
+            speed = 1;
+            volume = .9;
+        }
+
+        document.getElementById('speedRange').value = speed;
+        document.getElementById('volumeRange').value = volume;
+
+        audio.playbackRate = speed;
+        video.playbackRate = speed;
+        audio.volume = volume;
+        video.volume = volume;
+
+        document.getElementById('speedText').textContent = speed.toFixed(2) + 'x';
+        document.getElementById('volumeText').textContent = Math.round(volume * 100) + '%';
+    }
+
+    function importDeviceFiles(){
+        document.getElementById('deviceFiles').click();
+    }
+
+    document.getElementById('deviceFiles').addEventListener('change', function(){
+        const files = Array.from(this.files || []);
+
+        files.forEach(file => {
+            const isVideo = file.type.startsWith('video');
+
+            library.unshift({
+                id:'dev_' + Date.now() + '_' + Math.random().toString(16).slice(2),
+                title:file.name.replace(/\.[^/.]+$/, ''),
+                artist:'Device File',
+                type:isVideo ? 'video' : 'audio',
+                url:URL.createObjectURL(file),
+                image:'',
+                lyrics:'Local file kutoka kwenye device.',
+                source:'device-temp'
+            });
+        });
+
+        setTab('library');
+        renderList();
+
+        if(!currentSong && library.length) selectSong(library[0].id, false);
+    });
+
+    function extractYoutubeId(input){
+        if(!input) return '';
+
+        const text = input.trim();
+
+        if(/^[a-zA-Z0-9_-]{11}$/.test(text)) return text;
+
+        const patterns = [
+            /v=([a-zA-Z0-9_-]{11})/,
+            /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+            /embed\/([a-zA-Z0-9_-]{11})/,
+            /shorts\/([a-zA-Z0-9_-]{11})/
+        ];
+
+        for(const p of patterns){
+            const m = text.match(p);
+            if(m) return m[1];
+        }
+
+        return '';
+    }
+
+    function toggleType(){
+        const type = document.getElementById('addType').value;
+        document.getElementById('fileBox').classList.toggle('d-none', type === 'youtube');
+        document.getElementById('youtubeBox').classList.toggle('d-none', type !== 'youtube');
+    }
+
+    function saveManual(){
+        const title = document.getElementById('addTitle').value.trim();
+        const artist = document.getElementById('addArtist').value.trim();
+        const type = document.getElementById('addType').value;
+        const file = document.getElementById('addFile').files[0];
+        const url = document.getElementById('addUrl').value.trim();
+        const yt = document.getElementById('addYoutube').value.trim();
+        const img = document.getElementById('addImage').files[0];
+        const lyrics = document.getElementById('addLyrics').value.trim();
+
+        if(!title){
+            alert('Weka title.');
+            return;
+        }
+
+        let finalUrl = '';
+        let youtubeId = '';
+        let image = img ? URL.createObjectURL(img) : '';
+
+        if(type === 'youtube'){
+            youtubeId = extractYoutubeId(yt);
+
+            if(!youtubeId){
+                alert('YouTube link si sahihi.');
+                return;
+            }
+
+            image = image || `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+        }else{
+            if(file) finalUrl = URL.createObjectURL(file);
+            else if(url) finalUrl = url;
+            else{
+                alert('Chagua file au weka URL.');
+                return;
+            }
+        }
+
+        const item = {
+            id:'manual_' + Date.now(),
+            title,
+            artist:artist || 'Unknown',
+            type,
+            url:finalUrl,
+            youtubeId,
+            image,
+            lyrics:lyrics || 'Hakuna lyrics/details.',
+            source:file || img ? 'device-temp' : 'manual'
+        };
+
+        library.unshift(item);
+        saveLocal();
+
+        document.getElementById('addTitle').value = '';
+        document.getElementById('addArtist').value = '';
+        document.getElementById('addFile').value = '';
+        document.getElementById('addUrl').value = '';
+        document.getElementById('addYoutube').value = '';
+        document.getElementById('addImage').value = '';
+        document.getElementById('addLyrics').value = '';
+
+        bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+
+        setTab('library');
+        selectSong(item.id, true);
+    }
+
+    function addToPlaylist(id){
+        if(!playlist.includes(id)){
+            playlist.unshift(id);
+            saveLocal();
+            alert('Imeongezwa kwenye playlist.');
+        }
+    }
+
+    function addCurrentToPlaylist(){
+        if(!currentSong){
+            alert('Chagua music kwanza.');
+            return;
+        }
+
+        addToPlaylist(currentSong.id);
+    }
+
+    function openLyrics(){
+        document.getElementById('lyricsSheet').classList.add('open');
+    }
+
+    function closeLyrics(){
+        document.getElementById('lyricsSheet').classList.remove('open');
+    }
+
+    function clearLibrary(){
+        if(!confirm('Una uhakika unataka kufuta library na playlist?')) return;
+
+        library = [];
+        playlist = [];
+        searchResults = [];
+        currentSong = null;
+
+        localStorage.removeItem('shottoLibrary');
+        localStorage.removeItem('shottoPlaylist');
+
+        stopAll();
+
+        document.getElementById('nowTitle').textContent = 'Chagua music';
+        document.getElementById('nowArtist').textContent = 'Fixed YouTube + Device Music + Search';
+        document.getElementById('bottomTitle').textContent = 'No music selected';
+        document.getElementById('bottomArtist').textContent = 'Tap kufungua lyrics/details';
+        document.getElementById('bottomThumb').innerHTML = `<i class="fa-solid fa-music"></i>`;
+        document.getElementById('lyricsBody').textContent = 'Lyrics/details zitaonekana hapa.';
+
+        setTab('fixed');
+    }
+
+    const sheet = document.getElementById('lyricsSheet');
+    const handle = document.getElementById('dragHandle');
+    let dragging = false;
+    let startY = 0;
+    let startHeight = 0;
+
+    handle.addEventListener('pointerdown', e => {
+        dragging = true;
+        startY = e.clientY;
+        startHeight = sheet.offsetHeight;
+        handle.setPointerCapture(e.pointerId);
+    });
+
+    handle.addEventListener('pointermove', e => {
+        if(!dragging) return;
+
+        const diff = startY - e.clientY;
+        const h = Math.max(165, Math.min(window.innerHeight * .78, startHeight + diff));
+        sheet.style.height = h + 'px';
+    });
+
+    handle.addEventListener('pointerup', e => {
+        dragging = false;
+        handle.releasePointerCapture(e.pointerId);
+    });
+
+    renderList();
+    toggleType();
+    applyPreset();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
