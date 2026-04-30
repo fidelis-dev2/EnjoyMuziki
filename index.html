@@ -49,7 +49,7 @@ body{
 .header{
     position:sticky;
     top:0;
-    z-index:2000;
+    z-index:12000;
     background:#050816;
     border-bottom:1px solid var(--line);
     padding:10px 12px 12px;
@@ -140,6 +140,8 @@ body{
     grid-template-columns:1fr 43px;
     gap:8px;
     margin-top:10px;
+    position:relative;
+    z-index:13000;
 }
 
 .form-control,
@@ -162,15 +164,22 @@ textarea::placeholder{
     font-weight:800;
 }
 
+/* FIXED SEARCH OVERLAY */
 .search-results-top{
     display:none;
-    margin-top:10px;
-    max-height:235px;
+    position:fixed;
+    left:50%;
+    top:118px;
+    transform:translateX(-50%);
+    width:min(560px, calc(100vw - 16px));
+    max-height:calc(100vh - 240px);
     overflow-y:auto;
     border-radius:20px;
     background:#08111f;
     border:1px solid var(--line);
     padding:8px;
+    z-index:12500;
+    box-shadow:0 20px 70px rgba(0,0,0,.75);
 }
 
 .search-results-top.show{
@@ -188,6 +197,8 @@ textarea::placeholder{
     padding:12px;
     box-shadow:0 18px 45px rgba(0,0,0,.35);
     margin-bottom:14px;
+    position:relative;
+    z-index:1;
 }
 
 .player-section.mini{
@@ -635,11 +646,11 @@ textarea::placeholder{
 .library-card.fixed-list{
     position:fixed;
     left:50%;
-    top:72px;
+    top:76px;
     bottom:112px;
     transform:translateX(-50%);
     width:min(560px, calc(100vw - 16px));
-    z-index:3000;
+    z-index:8000;
     overflow:hidden;
     display:block;
     box-shadow:0 20px 70px rgba(0,0,0,.7);
@@ -736,6 +747,22 @@ textarea::placeholder{
     font-size:13px;
 }
 
+.modal{
+    z-index:20000!important;
+}
+
+.modal-backdrop{
+    z-index:19999!important;
+}
+
+.offcanvas{
+    z-index:18000!important;
+}
+
+.offcanvas-backdrop{
+    z-index:17999!important;
+}
+
 .modal-content,
 .offcanvas{
     background:#08111f!important;
@@ -785,6 +812,10 @@ textarea::placeholder{
     display:grid;
     place-items:center;
     background:#111827;
+}
+
+#audioPlayer{
+    display:none;
 }
 
 @media(max-width:430px){
@@ -849,10 +880,18 @@ textarea::placeholder{
     }
 
     .library-card.fixed-list{
-        top:66px;
+        top:72px;
         bottom:104px;
         width:calc(100vw - 12px);
         border-radius:22px;
+        z-index:8000;
+    }
+
+    .search-results-top{
+        top:118px;
+        width:calc(100vw - 12px);
+        max-height:calc(100vh - 230px);
+        z-index:12500;
     }
 
     .stage.fullscreen-mode{
@@ -870,9 +909,6 @@ textarea::placeholder{
     .fs-buttons{
         gap:9px;
     }
-}
-#audioPlayer{
-    display:none;
 }
 </style>
 </head>
@@ -955,14 +991,15 @@ textarea::placeholder{
                 </button>
 
                 <button id="showListBtn" class="view-btn" onclick="collapseToList()">
-                    <i class="fa-solid fa-list-music"></i>
+                    <i class="fa-solid fa-list-ul"></i>
                 </button>
             </div>
 
             <iframe id="youtubeFrame" class="youtube-frame"
                 allow="autoplay; encrypted-media; picture-in-picture"
                 allowfullscreen></iframe>
-<audio id="audioPlayer" preload="metadata"></audio>
+
+            <audio id="audioPlayer" preload="metadata"></audio>
 
             <div class="disc-area" id="discArea">
                 <div class="disc" id="disc">
@@ -1231,60 +1268,12 @@ textarea::placeholder{
 
 <script>
 const fixedYoutube = [
-    {
-        id:'yt1',
-        title:'Fixed YouTube 1',
-        artist:'YouTube',
-        type:'youtube',
-        youtubeId:'rJwEphsNVH8',
-        image:'https://img.youtube.com/vi/rJwEphsNVH8/hqdefault.jpg',
-        lyrics:''
-    },
-    {
-        id:'yt2',
-        title:'Fixed YouTube 2',
-        artist:'YouTube',
-        type:'youtube',
-        youtubeId:'CQLsdm1ZYAw',
-        image:'https://img.youtube.com/vi/CQLsdm1ZYAw/hqdefault.jpg',
-        lyrics:''
-    },
-    {
-        id:'yt3',
-        title:'Fixed YouTube 3',
-        artist:'YouTube',
-        type:'youtube',
-        youtubeId:'dNt1QR1ecuM',
-        image:'https://img.youtube.com/vi/dNt1QR1ecuM/hqdefault.jpg',
-        lyrics:''
-    },
-    {
-        id:'yt4',
-        title:'Fixed YouTube 4',
-        artist:'YouTube',
-        type:'youtube',
-        youtubeId:'nrTkERuwdCc',
-        image:'https://img.youtube.com/vi/nrTkERuwdCc/hqdefault.jpg',
-        lyrics:''
-    },
-    {
-        id:'yt5',
-        title:'Fixed YouTube 5',
-        artist:'YouTube',
-        type:'youtube',
-        youtubeId:'bLF90M96m2Q',
-        image:'https://img.youtube.com/vi/bLF90M96m2Q/hqdefault.jpg',
-        lyrics:''
-    },
-    {
-        id:'yt6',
-        title:'Jamal Coded Prada',
-        artist:'Jamal Coded',
-        type:'youtube',
-        youtubeId:'CFxqCdEziZE',
-        image:'https://img.youtube.com/vi/CFxqCdEziZE/hqdefault.jpg',
-        lyrics:''
-    }
+    {id:'yt1',title:'Fixed YouTube 1',artist:'YouTube',type:'youtube',youtubeId:'rJwEphsNVH8',image:'https://img.youtube.com/vi/rJwEphsNVH8/hqdefault.jpg',lyrics:''},
+    {id:'yt2',title:'Fixed YouTube 2',artist:'YouTube',type:'youtube',youtubeId:'CQLsdm1ZYAw',image:'https://img.youtube.com/vi/CQLsdm1ZYAw/hqdefault.jpg',lyrics:''},
+    {id:'yt3',title:'Fixed YouTube 3',artist:'YouTube',type:'youtube',youtubeId:'dNt1QR1ecuM',image:'https://img.youtube.com/vi/dNt1QR1ecuM/hqdefault.jpg',lyrics:''},
+    {id:'yt4',title:'Fixed YouTube 4',artist:'YouTube',type:'youtube',youtubeId:'nrTkERuwdCc',image:'https://img.youtube.com/vi/nrTkERuwdCc/hqdefault.jpg',lyrics:''},
+    {id:'yt5',title:'Fixed YouTube 5',artist:'YouTube',type:'youtube',youtubeId:'bLF90M96m2Q',image:'https://img.youtube.com/vi/bLF90M96m2Q/hqdefault.jpg',lyrics:''},
+    {id:'yt6',title:'Jamal Coded Prada',artist:'Jamal Coded',type:'youtube',youtubeId:'CFxqCdEziZE',image:'https://img.youtube.com/vi/CFxqCdEziZE/hqdefault.jpg',lyrics:''}
 ];
 
 let library = JSON.parse(localStorage.getItem('shottoYoutubeLibrary')) || [];
@@ -1292,6 +1281,7 @@ let playlist = JSON.parse(localStorage.getItem('shottoYoutubePlaylist')) || [];
 let searchResults = [];
 let currentTab = 'fixed';
 let currentSong = null;
+let isPlaying = false;
 
 let playModes = ['all','one','shuffle'];
 let playMode = localStorage.getItem('shottoPlayMode') || 'all';
@@ -1302,7 +1292,6 @@ let subtitleTimer = null;
 let subtitleLineA = [];
 let subtitleLineB = [];
 let lyricsVisible = false;
-
 
 const playerSection = document.getElementById('playerSection');
 const stage = document.getElementById('stage');
@@ -1316,11 +1305,10 @@ const miniPlayIcon = document.getElementById('miniPlayIcon');
 const libraryCard = document.getElementById('libraryCard');
 const discCover = document.getElementById('discCover');
 const appHeader = document.getElementById('appHeader');
+const audioPlayer = document.getElementById('audioPlayer');
 
-// Search box inafunguka/kufunga kwa kubonyeza icon tu, siyo kwa scroll.
 function toggleSearchBox(){
     const isOpen = appHeader.classList.contains('search-open');
-
     if(isOpen){
         closeSearchBox();
     }else{
@@ -1329,13 +1317,20 @@ function toggleSearchBox(){
 }
 
 function openSearchBox(){
+    exitFullScreenModeOnly();
     appHeader.classList.remove('hide-search');
     appHeader.classList.add('search-open');
     document.getElementById('searchToggleBtn').classList.add('active');
 
     setTimeout(() => {
         document.getElementById('searchInput').focus();
-    }, 100);
+    }, 80);
+
+    const topBox = document.getElementById('searchResultsTop');
+    if(searchResults.length > 0){
+        topBox.innerHTML = searchResults.slice(0, 8).map(itemHtml).join('');
+        topBox.classList.add('show');
+    }
 }
 
 function closeSearchBox(){
@@ -1344,7 +1339,6 @@ function closeSearchBox(){
     document.getElementById('searchToggleBtn').classList.remove('active');
     document.getElementById('searchResultsTop').classList.remove('show');
 }
-
 
 function saveLocal(){
     localStorage.setItem('shottoYoutubeLibrary', JSON.stringify(library));
@@ -1362,15 +1356,13 @@ function escapeHtml(text){
 
 function collapseToList(){
     exitFullScreenModeOnly();
+    closeSearchBox();
     minimizePlayer();
     showLibrary();
 
     setTimeout(() => {
-        libraryCard.scrollIntoView({
-            behavior:'smooth',
-            block:'start'
-        });
-    }, 120);
+        libraryCard.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 100);
 
     const canvas = bootstrap.Offcanvas.getInstance(document.getElementById('menuCanvas'));
     if(canvas) canvas.hide();
@@ -1381,14 +1373,12 @@ function expandPlayerAndHideList(){
     hideLibrary();
 
     setTimeout(() => {
-        playerSection.scrollIntoView({
-            behavior:'smooth',
-            block:'start'
-        });
+        playerSection.scrollIntoView({behavior:'smooth', block:'start'});
     }, 80);
 }
 
 function showLibrary(){
+    closeSearchBox();
     libraryCard.classList.add('show');
 
     if(window.innerWidth <= 768){
@@ -1411,7 +1401,6 @@ function hideLibrary(){
 
 function extractYoutubeId(input){
     if(!input) return '';
-
     const text = input.trim();
 
     if(/^[a-zA-Z0-9_-]{11}$/.test(text)) return text;
@@ -1501,10 +1490,21 @@ function getList(){
     return [];
 }
 
+function allSongs(){
+    return [...fixedYoutube, ...library, ...searchResults];
+}
+
 function findSong(id){
-    return [...fixedYoutube, ...library, ...searchResults, ...playlist.map(pid => {
-        return [...fixedYoutube, ...library, ...searchResults].find(x => String(x.id) === String(pid));
-    }).filter(Boolean)].find(x => String(x.id) === String(id));
+    let base = allSongs();
+    let direct = base.find(x => String(x.id) === String(id));
+    if(direct) return direct;
+
+    for(const pid of playlist){
+        const found = base.find(x => String(x.id) === String(pid));
+        if(found && String(found.id) === String(id)) return found;
+    }
+
+    return null;
 }
 
 function itemHtml(song){
@@ -1550,6 +1550,8 @@ async function searchMusic(){
         return;
     }
 
+    hideLibrary();
+
     const topBox = document.getElementById('searchResultsTop');
     topBox.classList.add('show');
     topBox.innerHTML = `
@@ -1560,8 +1562,8 @@ async function searchMusic(){
     `;
 
     try{
-        const url = 'https://itunes.apple.com/search?term=' 
-            + encodeURIComponent(q) 
+        const url = 'https://itunes.apple.com/search?term='
+            + encodeURIComponent(q)
             + '&entity=song&limit=25';
 
         const response = await fetch(url);
@@ -1569,18 +1571,23 @@ async function searchMusic(){
 
         searchResults = (data.results || [])
             .filter(item => item.previewUrl)
-            .map((item, index) => {
-                return {
-                    id:'itunes_' + item.trackId + '_' + index,
-                    title:item.trackName || 'Unknown Song',
-                    artist:item.artistName || 'Unknown Artist',
-                    type:'audio',
-                    audioUrl:item.previewUrl,
-                    image:(item.artworkUrl100 || '').replace('100x100bb', '600x600bb'),
-                    lyrics:'',
-                    source:'iTunes Preview'
-                };
-            });
+            .map((item, index) => ({
+                id:'itunes_' + item.trackId + '_' + index,
+                title:item.trackName || 'Unknown Song',
+                artist:item.artistName || 'Unknown Artist',
+                type:'audio',
+                audioUrl:item.previewUrl,
+                image:(item.artworkUrl100 || '').replace('100x100bb', '600x600bb'),
+                lyrics:'',
+                source:'iTunes Preview'
+            }));
+
+        currentTab = 'search';
+        document.getElementById('menuFixed').classList.remove('active');
+        document.getElementById('menuLibrary').classList.remove('active');
+        document.getElementById('menuSearch').classList.add('active');
+        document.getElementById('menuPlaylist').classList.remove('active');
+        document.getElementById('sourceTitle').textContent = 'Search Results';
 
         if(searchResults.length === 0){
             topBox.innerHTML = `
@@ -1589,26 +1596,15 @@ async function searchMusic(){
                     Jaribu jina lingine la msanii au wimbo.
                 </div>
             `;
-            currentTab = 'search';
             renderList();
             return;
         }
 
-        currentTab = 'search';
-
-        document.getElementById('menuFixed').classList.remove('active');
-        document.getElementById('menuLibrary').classList.remove('active');
-        document.getElementById('menuSearch').classList.add('active');
-        document.getElementById('menuPlaylist').classList.remove('active');
-        document.getElementById('sourceTitle').textContent = 'Search Results';
-
-        topBox.innerHTML = searchResults.slice(0, 6).map(itemHtml).join('');
-
+        topBox.innerHTML = searchResults.slice(0, 8).map(itemHtml).join('');
         renderList();
 
     }catch(error){
         console.error(error);
-
         topBox.innerHTML = `
             <div class="empty">
                 Imeshindikana kusearch online. Hakikisha internet ipo kisha jaribu tena.
@@ -1657,8 +1653,7 @@ function selectSong(id, autoplay){
         return;
     }
 
-    document.getElementById('searchResultsTop').classList.remove('show');
-
+    closeSearchBox();
     renderList();
     expandPlayerFromMini();
     hideLibrary();
@@ -1670,19 +1665,30 @@ function selectSong(id, autoplay){
 }
 
 function showYoutube(videoId, autoplay){
-    const audio = document.getElementById('audioPlayer');
-    audio.pause();
-    audio.src = '';
+    audioPlayer.pause();
+    audioPlayer.src = '';
 
     discArea.style.display = 'none';
     youtubeFrame.style.display = 'block';
-    youtubeFrame.src = `https://www.youtube.com/embed/${videoId}${autoplay ? '?autoplay=1&rel=0' : '?rel=0'}`;
 
-    setPlaying(true);
+    youtubeFrame.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0${autoplay ? '&autoplay=1' : ''}`;
 
-    if(lyricsVisible){
+    isPlaying = autoplay;
+    setPlaying(autoplay);
+
+    if(lyricsVisible && autoplay){
         startSubtitles();
     }
+}
+
+function postToYoutube(command){
+    if(!youtubeFrame || !youtubeFrame.contentWindow) return;
+
+    youtubeFrame.contentWindow.postMessage(JSON.stringify({
+        event:'command',
+        func:command,
+        args:[]
+    }), '*');
 }
 
 function togglePlay(){
@@ -1692,22 +1698,20 @@ function togglePlay(){
         return;
     }
 
-    const audio = document.getElementById('audioPlayer');
-
     if(currentSong.type === 'audio'){
-        if(audio.paused){
-            audio.play()
+        if(audioPlayer.paused){
+            audioPlayer.play()
                 .then(() => {
+                    isPlaying = true;
                     setPlaying(true);
-                    if(lyricsVisible){
-                        startSubtitles();
-                    }
+                    if(lyricsVisible) startSubtitles();
                 })
                 .catch(() => {
                     alert('Bonyeza tena play kuanza music.');
                 });
         }else{
-            audio.pause();
+            audioPlayer.pause();
+            isPlaying = false;
             setPlaying(false);
             stopSubtitles();
         }
@@ -1715,7 +1719,17 @@ function togglePlay(){
     }
 
     if(currentSong.youtubeId){
-        showYoutube(currentSong.youtubeId, true);
+        if(isPlaying){
+            postToYoutube('pauseVideo');
+            isPlaying = false;
+            setPlaying(false);
+            stopSubtitles();
+        }else{
+            postToYoutube('playVideo');
+            isPlaying = true;
+            setPlaying(true);
+            if(lyricsVisible) startSubtitles();
+        }
     }
 }
 
@@ -1725,36 +1739,36 @@ function showAudio(song, autoplay){
 
     discArea.style.display = 'grid';
 
-    const audio = document.getElementById('audioPlayer');
-    audio.src = song.audioUrl;
-    audio.playbackRate = Number(document.getElementById('speedRange').value || 1);
-    audio.volume = Number(document.getElementById('volumeRange').value || 1);
+    audioPlayer.src = song.audioUrl;
+    audioPlayer.playbackRate = Number(document.getElementById('speedRange').value || 1);
+    audioPlayer.volume = Number(document.getElementById('volumeRange').value || 1);
 
     if(autoplay){
-        audio.play()
+        audioPlayer.play()
             .then(() => {
+                isPlaying = true;
                 setPlaying(true);
-                if(lyricsVisible){
-                    startSubtitles();
-                }
+                if(lyricsVisible) startSubtitles();
             })
             .catch(() => {
+                isPlaying = false;
                 setPlaying(false);
                 alert('Browser imezuia autoplay. Bonyeza play.');
             });
     }else{
+        isPlaying = false;
         setPlaying(false);
     }
 }
 
-function setPlaying(isPlaying){
-    playBtn.innerHTML = isPlaying ? `<i class="fa-solid fa-pause"></i>` : `<i class="fa-solid fa-play"></i>`;
-    miniPlayIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
-    document.getElementById('fsPlayIcon').className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+function setPlaying(status){
+    playBtn.innerHTML = status ? `<i class="fa-solid fa-pause"></i>` : `<i class="fa-solid fa-play"></i>`;
+    miniPlayIcon.className = status ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+    document.getElementById('fsPlayIcon').className = status ? 'fa-solid fa-pause' : 'fa-solid fa-play';
 
-    disc.classList.toggle('playing', isPlaying);
-    toneArm.classList.toggle('playing', isPlaying);
-    waves.classList.toggle('playing', isPlaying);
+    disc.classList.toggle('playing', status);
+    toneArm.classList.toggle('playing', status);
+    waves.classList.toggle('playing', status);
 }
 
 function getCurrentIndex(){
@@ -1794,7 +1808,7 @@ function nextSong(){
 
     let i = getCurrentIndex();
     i++;
-    if(i >= data.length) i = 0;
+    if(i >= data.length || i < 0) i = 0;
 
     selectSong(data[i].id, true);
 }
@@ -1912,7 +1926,7 @@ function toggleLyricsPopup(){
         if(subtitleWords.length === 0){
             prepareSubtitles(currentSong);
         }
-        startSubtitles();
+        if(isPlaying) startSubtitles();
     }else{
         stopSubtitles();
     }
@@ -2003,7 +2017,7 @@ function openSongBio(id){
 
     document.getElementById('bioTitle').textContent = song.title;
     document.getElementById('bioArtist').textContent = song.artist || 'YouTube';
-    document.getElementById('bioType').textContent = 'YOUTUBE';
+    document.getElementById('bioType').textContent = song.type === 'audio' ? 'AUDIO' : 'YOUTUBE';
 
     document.getElementById('bioImage').innerHTML = song.image
         ? `<img src="${song.image}" style="width:100%;height:100%;object-fit:cover;">`
@@ -2036,22 +2050,21 @@ function applyPreset(){
     document.getElementById('volumeRange').value = volume;
     document.getElementById('speedText').textContent = speed.toFixed(2) + 'x';
     document.getElementById('volumeText').textContent = Math.round(volume * 100) + '%';
+
+    audioPlayer.playbackRate = speed;
+    audioPlayer.volume = volume;
 }
 
 document.getElementById('speedRange').addEventListener('input', function(){
     const v = Number(this.value);
     document.getElementById('speedText').textContent = v.toFixed(2) + 'x';
-
-    const audio = document.getElementById('audioPlayer');
-    audio.playbackRate = v;
+    audioPlayer.playbackRate = v;
 });
 
 document.getElementById('volumeRange').addEventListener('input', function(){
     const v = Number(this.value);
     document.getElementById('volumeText').textContent = Math.round(v * 100) + '%';
-
-    const audio = document.getElementById('audioPlayer');
-    audio.volume = v;
+    audioPlayer.volume = v;
 });
 
 function toggleExpandScreen(){
@@ -2063,6 +2076,7 @@ function toggleExpandScreen(){
 }
 
 function enterFullScreenMode(){
+    closeSearchBox();
     expandPlayerFromMini();
     hideLibrary();
 
@@ -2104,18 +2118,22 @@ window.addEventListener('resize', () => {
     }
 });
 
-renderList();
-applyPreset();
-updateModeButton();
-hideLibrary();
-closeSearchBox();
-document.getElementById('audioPlayer').addEventListener('ended', function(){
+audioPlayer.addEventListener('ended', function(){
+    isPlaying = false;
+    setPlaying(false);
+
     if(playMode === 'one' && currentSong){
         selectSong(currentSong.id, true);
     }else{
         nextSong();
     }
 });
+
+renderList();
+applyPreset();
+updateModeButton();
+hideLibrary();
+closeSearchBox();
 </script>
 
 </body>
