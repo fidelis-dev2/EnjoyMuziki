@@ -871,6 +871,9 @@ textarea::placeholder{
         gap:9px;
     }
 }
+#audioPlayer{
+    display:none;
+}
 </style>
 </head>
 
@@ -959,6 +962,7 @@ textarea::placeholder{
             <iframe id="youtubeFrame" class="youtube-frame"
                 allow="autoplay; encrypted-media; picture-in-picture"
                 allowfullscreen></iframe>
+<audio id="audioPlayer" preload="metadata"></audio>
 
             <div class="disc-area" id="discArea">
                 <div class="disc" id="disc">
@@ -1498,20 +1502,25 @@ function getList(){
 }
 
 function findSong(id){
-    return [...fixedYoutube, ...library, ...searchResults].find(x => String(x.id) === String(id));
+    return [...fixedYoutube, ...library, ...searchResults, ...playlist.map(pid => {
+        return [...fixedYoutube, ...library, ...searchResults].find(x => String(x.id) === String(pid));
+    }).filter(Boolean)].find(x => String(x.id) === String(id));
 }
 
 function itemHtml(song){
+    const iconClass = song.type === 'audio' ? 'fa-solid fa-music' : 'fa-brands fa-youtube';
+    const typeLabel = song.type === 'audio' ? 'ONLINE AUDIO' : 'YOUTUBE';
+
     return `
         <div class="item ${currentSong && currentSong.id === song.id ? 'active' : ''}" onclick="selectSong('${song.id}', true)">
             <div class="thumb">
-                ${song.image ? `<img src="${song.image}" alt="">` : `<i class="fa-brands fa-youtube"></i>`}
+                ${song.image ? `<img src="${song.image}" alt="">` : `<i class="${iconClass}"></i>`}
             </div>
 
             <div class="meta">
                 <strong>${escapeHtml(song.title)}</strong>
-                <small>${escapeHtml(song.artist || 'YouTube')}</small>
-                <small>YOUTUBE</small>
+                <small>${escapeHtml(song.artist || 'Unknown Artist')}</small>
+                <small>${typeLabel}</small>
             </div>
 
             <button class="mini-round" onclick="event.stopPropagation(); openSongBio('${song.id}')">
@@ -1533,38 +1542,79 @@ function renderList(){
     box.innerHTML = data.map(itemHtml).join('');
 }
 
-function searchMusic(){
+async function searchMusic(){
     const q = document.getElementById('searchInput').value.trim();
 
     if(!q){
-        alert('Andika jina la music au video.');
+        alert('Andika jina la music au artist.');
         return;
     }
-
-    searchResults = [
-        {
-            id:'search_open_' + Date.now(),
-            title:q,
-            artist:'Open on YouTube Search',
-            type:'youtube',
-            youtubeId:'',
-            image:'',
-            lyrics:''
-        }
-    ];
 
     const topBox = document.getElementById('searchResultsTop');
     topBox.classList.add('show');
     topBox.innerHTML = `
         <div class="empty">
-            HTML pekee haiwezi kuvuta YouTube results zote moja kwa moja bila backend/API.<br><br>
-            <button class="btn btn-main btn-sm" onclick="openYoutubeSearch()">
-                <i class="fa-brands fa-youtube me-1"></i> Fungua YouTube Search
-            </button>
+            <i class="fa-solid fa-spinner fa-spin me-2"></i>
+            Inatafuta online...
         </div>
     `;
 
-    setTab('search');
+    try{
+        const url = 'https://itunes.apple.com/search?term=' 
+            + encodeURIComponent(q) 
+            + '&entity=song&limit=25';
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        searchResults = (data.results || [])
+            .filter(item => item.previewUrl)
+            .map((item, index) => {
+                return {
+                    id:'itunes_' + item.trackId + '_' + index,
+                    title:item.trackName || 'Unknown Song',
+                    artist:item.artistName || 'Unknown Artist',
+                    type:'audio',
+                    audioUrl:item.previewUrl,
+                    image:(item.artworkUrl100 || '').replace('100x100bb', '600x600bb'),
+                    lyrics:'',
+                    source:'iTunes Preview'
+                };
+            });
+
+        if(searchResults.length === 0){
+            topBox.innerHTML = `
+                <div class="empty">
+                    Hakuna music iliyopatikana kwa jina hilo.<br>
+                    Jaribu jina lingine la msanii au wimbo.
+                </div>
+            `;
+            currentTab = 'search';
+            renderList();
+            return;
+        }
+
+        currentTab = 'search';
+
+        document.getElementById('menuFixed').classList.remove('active');
+        document.getElementById('menuLibrary').classList.remove('active');
+        document.getElementById('menuSearch').classList.add('active');
+        document.getElementById('menuPlaylist').classList.remove('active');
+        document.getElementById('sourceTitle').textContent = 'Search Results';
+
+        topBox.innerHTML = searchResults.slice(0, 6).map(itemHtml).join('');
+
+        renderList();
+
+    }catch(error){
+        console.error(error);
+
+        topBox.innerHTML = `
+            <div class="empty">
+                Imeshindikana kusearch online. Hakikisha internet ipo kisha jaribu tena.
+            </div>
+        `;
+    }
 }
 
 document.getElementById('searchInput').addEventListener('keydown', e => {
@@ -1589,20 +1639,23 @@ function selectSong(id, autoplay){
     const song = findSong(id);
     if(!song) return;
 
-    if(!song.youtubeId){
-        openYoutubeSearch();
-        return;
-    }
-
     currentSong = song;
 
     document.getElementById('nowTitle').textContent = song.title;
-    document.getElementById('nowArtist').textContent = song.artist || 'YouTube';
-    document.getElementById('fsTitle').textContent = song.title + ' - ' + (song.artist || 'YouTube');
+    document.getElementById('nowArtist').textContent = song.artist || 'Unknown Artist';
+    document.getElementById('fsTitle').textContent = song.title + ' - ' + (song.artist || 'Unknown Artist');
 
     updateCoverImages(song);
     prepareSubtitles(song);
-    showYoutube(song.youtubeId, autoplay);
+
+    if(song.type === 'audio' && song.audioUrl){
+        showAudio(song, autoplay);
+    }else if(song.youtubeId){
+        showYoutube(song.youtubeId, autoplay);
+    }else{
+        alert('Music hii haina link ya kuplay.');
+        return;
+    }
 
     document.getElementById('searchResultsTop').classList.remove('show');
 
@@ -1617,6 +1670,10 @@ function selectSong(id, autoplay){
 }
 
 function showYoutube(videoId, autoplay){
+    const audio = document.getElementById('audioPlayer');
+    audio.pause();
+    audio.src = '';
+
     discArea.style.display = 'none';
     youtubeFrame.style.display = 'block';
     youtubeFrame.src = `https://www.youtube.com/embed/${videoId}${autoplay ? '?autoplay=1&rel=0' : '?rel=0'}`;
@@ -1630,13 +1687,63 @@ function showYoutube(videoId, autoplay){
 
 function togglePlay(){
     if(!currentSong){
-        alert('Chagua video kwanza.');
+        alert('Chagua music kwanza.');
         collapseToList();
+        return;
+    }
+
+    const audio = document.getElementById('audioPlayer');
+
+    if(currentSong.type === 'audio'){
+        if(audio.paused){
+            audio.play()
+                .then(() => {
+                    setPlaying(true);
+                    if(lyricsVisible){
+                        startSubtitles();
+                    }
+                })
+                .catch(() => {
+                    alert('Bonyeza tena play kuanza music.');
+                });
+        }else{
+            audio.pause();
+            setPlaying(false);
+            stopSubtitles();
+        }
         return;
     }
 
     if(currentSong.youtubeId){
         showYoutube(currentSong.youtubeId, true);
+    }
+}
+
+function showAudio(song, autoplay){
+    youtubeFrame.src = '';
+    youtubeFrame.style.display = 'none';
+
+    discArea.style.display = 'grid';
+
+    const audio = document.getElementById('audioPlayer');
+    audio.src = song.audioUrl;
+    audio.playbackRate = Number(document.getElementById('speedRange').value || 1);
+    audio.volume = Number(document.getElementById('volumeRange').value || 1);
+
+    if(autoplay){
+        audio.play()
+            .then(() => {
+                setPlaying(true);
+                if(lyricsVisible){
+                    startSubtitles();
+                }
+            })
+            .catch(() => {
+                setPlaying(false);
+                alert('Browser imezuia autoplay. Bonyeza play.');
+            });
+    }else{
+        setPlaying(false);
     }
 }
 
@@ -1934,11 +2041,17 @@ function applyPreset(){
 document.getElementById('speedRange').addEventListener('input', function(){
     const v = Number(this.value);
     document.getElementById('speedText').textContent = v.toFixed(2) + 'x';
+
+    const audio = document.getElementById('audioPlayer');
+    audio.playbackRate = v;
 });
 
 document.getElementById('volumeRange').addEventListener('input', function(){
     const v = Number(this.value);
     document.getElementById('volumeText').textContent = Math.round(v * 100) + '%';
+
+    const audio = document.getElementById('audioPlayer');
+    audio.volume = v;
 });
 
 function toggleExpandScreen(){
@@ -1996,6 +2109,13 @@ applyPreset();
 updateModeButton();
 hideLibrary();
 closeSearchBox();
+document.getElementById('audioPlayer').addEventListener('ended', function(){
+    if(playMode === 'one' && currentSong){
+        selectSong(currentSong.id, true);
+    }else{
+        nextSong();
+    }
+});
 </script>
 
 </body>
